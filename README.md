@@ -56,6 +56,16 @@ An executable binary metadata search engine. Currently MachO only.
 
 So the collector and the server don't have to be the same machine.
 
+### `pipenv install` failed to install LIEF
+
+Follow the instruction here:
+https://lief.quarkslab.com/doc/stable/installation.html
+
+Download the zip package from
+https://github.com/lief-project/packages/tree/lief-master-latest
+
+`pipenv shell; pip install [pylief-x.x.x.dev.zip]`
+
 ## TODO
 
 - Backend
