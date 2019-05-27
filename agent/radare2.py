@@ -47,5 +47,8 @@ def parse(path, entity):
         entity.classdump = r2.cmd('icc')
 
     for key, cmd in FIELD_MAPPING.items():
-        value = json.loads(r2.cmd(cmd))
-        setattr(entity, key, value)
+        val = r2.cmd(cmd)
+        if not val:
+            continue
+        obj = json.loads(val)
+        setattr(entity, key, obj)
