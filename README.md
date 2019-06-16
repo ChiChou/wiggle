@@ -19,7 +19,7 @@ An executable binary metadata search engine. Currently MachO only.
     pipenv install
     ```
 
-    If LIEF fails to install, use `pipenv shell` then `pip install --index-url  https://lief-project.github.io/packages lief`
+    If LIEF fails to install, use `pipenv shell; pip install --index-url  https://lief-project.github.io/packages lief`
 
     Note: docker is not required to run the collector.
 
@@ -46,11 +46,10 @@ An executable binary metadata search engine. Currently MachO only.
 1. Migrate the data to the full text search
 
     ```sh
-    # todo: docker mount read only
-    docker-compose run web python /agent/indexer.py 10.14.2 /agent/archive.db
+    docker-compose run -v `pwd`/archive.db:/archive.db web python /agent/indexer.py `sw_vers -productVersion` /archive.db
     ```
 
-1. Open localhost:8000 in the browser
+1. Open `localhost:8000` in the browser
 
 ## FAQ
 
