@@ -20,7 +20,7 @@ class Scanner(object):
         for path in self.directories:
             try:
                 self.scan(path)
-            except PermissionError:
+            except (PermissionError, FileNotFoundError):
                 logging.warning('Unable to read directory %s', path)
 
     def scan(self, cwd):

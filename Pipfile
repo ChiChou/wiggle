@@ -9,6 +9,7 @@ verify_ssl = true
 name = "lief"
 
 [dev-packages]
+pylint = "*"
 
 [packages]
 lief = {index = "lief"}

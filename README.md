@@ -19,6 +19,8 @@ An executable binary metadata search engine. Currently MachO only.
     pipenv install
     ```
 
+    If LIEF fails to install, use `pipenv shell` then `pip install --index-url  https://lief-project.github.io/packages lief`
+
     Note: docker is not required to run the collector.
 
     ```sh
