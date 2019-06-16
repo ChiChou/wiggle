@@ -5,7 +5,7 @@ from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponseNotFound
 
 from elasticsearch_dsl import Q, A
-from elasticsearch import NotFoundError
+from elasticsearch import NotFoundError, RequestError
 
 from libs.query import parse_query
 from search.esmodels import MachO
@@ -83,8 +83,9 @@ def search(request):
         .highlight('ent_str') \
         .highlight('codesign')
 
-    response = base_query.highlight('strings')[begin:end].execute()
-    if response.hits.total.value > 0 and not len(response):
+    try:
+        response = base_query.highlight('strings')[begin:end].execute()
+    except RequestError:
         # bug workaround: "strings" length exceed the limit of highlight
         response = base_query[begin:end].execute()
 
