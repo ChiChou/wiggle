@@ -12,8 +12,15 @@ def codesign(filename):
     args = ['codesign', '-dvvv', filename]
     try:
         return subprocess.check_output(args, stderr=subprocess.STDOUT).decode('utf8')
-    except Exception as e:
+    except:
         return ''
+
+
+def deprotect(src, dst):
+    from agent.config import deprotect as deprotect_path
+    args = [deprotect_path, src, dst]
+    status = subprocess.call(args, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+    return status == 0
 
 
 if __name__ == "__main__":
@@ -21,3 +28,4 @@ if __name__ == "__main__":
     print(apple('/etc/passwd'))
     print(codesign('/bin/sh'))
     print(codesign('/etc/passwd'))
+    print(deprotect('/System/Library/CoreServices/Finder.app/Contents/MacOS/Finder', '/tmp/Finder'))

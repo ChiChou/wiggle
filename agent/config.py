@@ -24,3 +24,7 @@ block_list = [
     '/usr/lib/ruby',
     '/usr/libexec/apache2',
 ]
+
+deprotect = '/usr/local/bin/deprotect'
+
+from agent.config_user import *

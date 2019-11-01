@@ -3,6 +3,8 @@ data/
 
 .vscode/
 
+agent/config_user.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
