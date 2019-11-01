@@ -3,13 +3,13 @@ import os
 import datetime
 import logging
 import plistlib
+import tempfile
 
 import lief
 
 from agent.radare2 import parse as r2parse
 from agent.codesign import CSFlags, parse_file as parse_codesign
-from agent.external import apple, codesign as check_codesign_cmd
-
+from agent.external import apple, deprotect, codesign as check_codesign_cmd
 
 def is_drm(o):
     TPM_ENCRYPTED = 8
@@ -35,23 +35,27 @@ def add(abspath, context):
 
     logging.info('file: %s', filename)
 
-    # lief
-    if isinstance(binary, lief.MachO.Binary):
-        parser = MachOParser(filename, context)
+    with tempfile.TemporaryFile() as tmpfile:
+        # lief
+        if isinstance(binary, lief.MachO.Binary):
+            parser = MachOParser(filename, context)
+        else:
+            raise NotImplementedError('Executable format unsupported yet %s' % binary.format)
+
         if is_drm(binary):
-            raise NotImplementedError('Encrypted binary not supported yet')
-    else:
-        raise NotImplementedError('Executable format unsupported yet %s' % binary.format)
+            deprotect(filename, tmpfile.name)
+            filename = tmpfile.name
+            parser = MachOParser(filename, context)
 
-    parser.assign(entity)
+        parser.assign(entity)
 
-    # radare2
-    try:
-        r2parse(filename, entity)
-    except Exception as e:
-        logging.error('Failed to decode radare2 output, file may be corrupted or unsupported')
-        logging.error(e)
-        return
+        # radare2
+        try:
+            r2parse(filename, entity)
+        except Exception as e:
+            logging.error('Failed to decode radare2 output, file may be corrupted or unsupported')
+            logging.error(e)
+            return
 
     entity.save()
     return entity
