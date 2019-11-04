@@ -4,6 +4,7 @@ import datetime
 import logging
 import plistlib
 import tempfile
+from abc import abstractmethod
 
 import lief
 
@@ -68,6 +69,10 @@ class Parser(object):
         self.binary = lief.parse(path)
         self.parser = None
 
+    @abstractmethod
+    def parse(self):
+        pass
+
     def assign(self, entity):
         # timestamp
         st = os.stat(self.path)
@@ -75,11 +80,11 @@ class Parser(object):
         entity.modified = datetime.datetime.fromtimestamp(st.st_mtime)
         entity.added = datetime.datetime.now()
 
-        self.parse_macho(entity)
+        self.parse(entity)
 
 
 class MachOParser(Parser):
-    def parse_macho(self, entity):
+    def parse(self, entity):
         try:
             content = next(sect.content for sect in self.binary.sections if sect.name == '__info_plist')
             buf = bytes(content).rstrip(b'\x00')
