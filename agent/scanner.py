@@ -41,7 +41,7 @@ class Scanner(object):
                 continue
             elif child.is_file():
                 try:
-                    add(child, self)
+                    add(child.resolve(), self)
                 except IntegrityError as e:
                     logging.error('Path %s may already exists\n(%s)', child, e)
                 except PermissionError:
