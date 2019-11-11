@@ -1,6 +1,7 @@
 import os
 import logging
 import json
+import time
 
 import coloredlogs
 
@@ -25,7 +26,7 @@ class Storage(object):
     def __init__(self, index_name):
         self.index_name = index_name
 
-    def migrate(self):
+    def migrate(self, throttle):
         from elasticsearch.helpers import bulk as bulk_save
         from elasticsearch.exceptions import ConnectionTimeout, ConnectionError
         from django.core.paginator import Paginator
@@ -53,6 +54,8 @@ class Storage(object):
 
             for failed in errors:
                 logging.error(failed)
+
+            time.sleep(throttle)
 
     def convert(self, macho):
         meta = {'index': self.index_name}
@@ -87,11 +90,12 @@ if __name__ == '__main__':
 
     django.setup()
 
-    # todo: directly save data to ElasticSearch without SQLite
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('index')
-    parser.add_argument('db')
+    parser.add_argument('index', help='index name')
+    parser.add_argument('db', help='path to SQLite3 archive')
+    parser.add_argument('--throttle', type=float, default=0,
+        help='seconds to sleep after every 100 records have been imported')
     args = parser.parse_args()
 
     if not os.path.exists(args.db):
@@ -112,4 +116,4 @@ if __name__ == '__main__':
     index.save()
 
     storage = Storage(index_name)
-    storage.migrate()
+    storage.migrate(args.throttle)
