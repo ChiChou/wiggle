@@ -36,7 +36,7 @@ def add(abspath, context):
 
     logging.info('file: %s', filename)
 
-    with tempfile.TemporaryFile() as tmpfile:
+    with tempfile.NamedTemporaryFile() as tmpfile:
         # lief
         if isinstance(binary, lief.MachO.Binary):
             parser = MachOParser(filename, context)
@@ -85,14 +85,16 @@ class Parser(object):
 
 class MachOParser(Parser):
     def parse(self, entity):
+        from xml.parsers.expat import ExpatError
         try:
             content = next(sect.content for sect in self.binary.sections if sect.name == '__info_plist')
             buf = bytes(content).rstrip(b'\x00')
 
+            print(buf.decode('utf8'))
             entity.info_plist_str = buf.decode('utf8')
             entity.info_plist = plistlib.loads(buf)
 
-        except (plistlib.InvalidFileException, StopIteration):
+        except (plistlib.InvalidFileException, StopIteration, ExpatError):
             pass
 
         signature = parse_codesign(self.binary, self.path)
