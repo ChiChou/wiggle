@@ -90,7 +90,6 @@ class MachOParser(Parser):
             content = next(sect.content for sect in self.binary.sections if sect.name == '__info_plist')
             buf = bytes(content).rstrip(b'\x00')
 
-            print(buf.decode('utf8'))
             entity.info_plist_str = buf.decode('utf8')
             entity.info_plist = plistlib.loads(buf)
 
