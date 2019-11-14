@@ -42,8 +42,7 @@ class Storage(object):
                     self.convert, page.object_list), raise_on_error=False)
             except (ConnectionTimeout, ConnectionError):
                 logging.warning('connection failure, retry')
-                import time
-                time.sleep(6)
+                time.sleep(throttle * 2)
 
                 # throw this time
                 inserted, errors = bulk_save(es_connection, map(
